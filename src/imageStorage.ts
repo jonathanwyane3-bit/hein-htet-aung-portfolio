@@ -100,17 +100,11 @@ export async function savePersistedImage(key: string, dataUrl: string): Promise<
 /**
  * Compresses an uploaded image file so it loads fast and never overflows browser memory.
  * Preserves PNG transparency for cutout/logo PNGs.
+ * Accepts either a File object or an existing base64 data URL string.
  */
-export function compressUploadedImage(file: File, maxDim = 960): Promise<string> {
+export function compressUploadedImage(file: File | string, maxDim = 960): Promise<string> {
   return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const rawDataUrl = typeof reader.result === 'string' ? reader.result : '';
-      if (!rawDataUrl) {
-        resolve('');
-        return;
-      }
-
+    const processDataUrl = (rawDataUrl: string, isPng: boolean) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
@@ -129,7 +123,6 @@ export function compressUploadedImage(file: File, maxDim = 960): Promise<string>
           }
 
           ctx.drawImage(img, 0, 0, w, h);
-          const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
           if (isPng) {
             resolve(canvas.toDataURL('image/png'));
           } else {
@@ -142,7 +135,23 @@ export function compressUploadedImage(file: File, maxDim = 960): Promise<string>
       img.onerror = () => resolve(rawDataUrl);
       img.src = rawDataUrl;
     };
-    reader.onerror = () => resolve('');
-    reader.readAsDataURL(file);
+
+    if (typeof file === 'string') {
+      const isPng = file.startsWith('data:image/png');
+      processDataUrl(file, isPng);
+    } else {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const rawDataUrl = typeof reader.result === 'string' ? reader.result : '';
+        if (!rawDataUrl) {
+          resolve('');
+          return;
+        }
+        const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+        processDataUrl(rawDataUrl, isPng);
+      };
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+    }
   });
 }
