@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-sans: "DM Sans", "Plus Jakarta Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes routeFlow {
+  0% {
+    stroke-dashoffset: 240;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes routeFlowReverse {
+  0% {
+    stroke-dashoffset: -240;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 36s linear infinite;
+}
+
+.animate-route-flow {
+  stroke-dasharray: 8 12;
+  animation: routeFlow 14s linear infinite;
+}
+
+.animate-route-flow-reverse {
+  stroke-dasharray: 6 10;
+  animation: routeFlowReverse 18s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-route-flow,
+  .animate-route-flow-reverse {
+    animation: none;
+  }
+}
