@@ -56,7 +56,7 @@ import {
   compressUploadedImage,
 } from './imageStorage';
 import { BUNDLED_IMAGES } from './bundledImages';
-import { downloadFullProjectZip } from './projectZip';
+
 import {
   SlideId,
   PORTFOLIO_SLIDES,
